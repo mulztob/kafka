@@ -1,0 +1,26 @@
+{
+  "name": "kafka-comsumer",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Stencil for Kafka",
+  "scripts": {
+    "build": "stencil build",
+    "start": "stencil build --dev --watch --serve",
+    "test": "stencil test --spec --e2e",
+    "test.watch": "stencil test --spec --e2e --watchAll",
+    "generate": "stencil generate"
+  },
+  "devDependencies": {
+    "@stencil/core": "2.18.1",
+    "@stencil/store": "^2.0.1",
+    "@types/jest": "^27.0.3",
+    "eslint": "^8.25.0",
+    "jest": "^27.4.5",
+    "jest-cli": "^27.4.5",
+    "puppeteer": "^18.2.1"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.0.3"
+  }
+}
