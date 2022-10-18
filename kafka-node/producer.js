@@ -1,5 +1,5 @@
 const { config } = require('dotenv');
-const { Kafka } = require('kafkajs');
+const { Kafka, CompressionTypes } = require('kafkajs');
 const ip = require('ip');
 
 config();
@@ -44,7 +44,7 @@ async function produceMessages(producer, key) {
             { key, value: `message-${key}-004` },
             { key, value: `message-${key}-005` },
         ]
-        await producer.send({ topic: process.env['TOPIC'] || 'msg', messages: newMessages })
+        await producer.send({ topic: process.env['KAFKA_TOPIC'] || 'msg', messages: newMessages, compression: CompressionTypes.GZIP })
     }
     catch (err) {
         console.error(err);

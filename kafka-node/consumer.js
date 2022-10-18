@@ -3,10 +3,13 @@ const { Kafka } = require('kafkajs');
 const ip = require('ip');
 
 config();
-(async () => spinUpConsumer())();
+// (async () => await spinUpConsumer())();
 
-
-async function spinUpConsumer() {
+//FIXME: example using batches and batchhandler
+/**
+ * @param {import('kafkajs').EachMessageHandler} [handler]
+ */
+async function spinUpConsumer(handler) {
     console.log('spinup consumer')
     const host = ip.address();
 
@@ -19,12 +22,10 @@ async function spinUpConsumer() {
     const consumer = kafka.consumer({ groupId: process.env.KAFKA_GROUPID ?? '1' })
     await consumer.connect();
 
-    console.log('TOPIC: ', process.env.TOPIC);
-    await consumer.subscribe({ topics: [process.env.TOPIC ?? 'msg'] })
+    console.log('TOPIC: ', process.env.KAFKA_TOPIC);
+    await consumer.subscribe({ topics: [process.env.KAFKA_TOPIC ?? 'msg'] });
 
-    consumer.run({
-        eachMessage: handleMessage
-    });
+    (handler) ? consumer.run({ eachMessage: handler }) : consumer.run({ eachMessage: handleMessage });
 }
 /**
  * 
@@ -43,3 +44,5 @@ const handleMessage = async ({ topic, partition, message, heartbeat, pause }) =>
         console.error(error);
     }
 }
+
+module.exports.consumer = spinUpConsumer;
