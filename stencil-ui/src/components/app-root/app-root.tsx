@@ -1,4 +1,5 @@
-import { Component, Env, h, State } from '@stencil/core';
+import { Component, h, State } from '@stencil/core';
+import { getMessages } from '../../kafka.worker';
 
 @Component({
   tag: 'app-root',
@@ -6,30 +7,34 @@ import { Component, Env, h, State } from '@stencil/core';
   shadow: true,
 })
 export class AppRoot {
-  @State() thing: string;
+  @State() thing: string[] = [];
+  private offset: number = 0;
+  private changeCounter: number = 0;
+  private readonly interval = 'intervalId';
+  private timerId: number;
 
-  private readonly backend = Env['BACKEND'];
+  componentWillLoad() {
+    const oldTimerId = window.sessionStorage.getItem(this.interval);
+    clearInterval(oldTimerId);
 
-  //FIXME: consider alternate to socket. move socket/service to webworker
-  private readonly socket = new WebSocket(this.backend);
-
-  private listener = (e: MessageEvent<string>) => {
-    this.thing = e.data;
-  };
-
-  connectedCallback() {
-    this.socket.onmessage = this.listener;
-    this.socket.onopen = () => (this.thing = 'socket ready');
-    this.socket.onerror = e => {
-      this.thing = 'connection error';
-      console.error(e);
-    };
+    const newTimerId = setInterval(
+      async () => {
+        const { newOffset, msg } = await getMessages(this.offset);
+        this.offset = newOffset;
+        this.changeCounter += msg.length;
+        this.thing = this.thing.length > 20 ? msg : this.thing.concat(msg);
+      },
+      250,
+      '',
+    );
+    this.timerId = newTimerId;
+    console.log(`will load, old timer: ${oldTimerId}, new timer ${newTimerId}`);
+    window.sessionStorage.setItem(this.interval, newTimerId.toString());
   }
 
-  disconnectedCallback() {
-    // this.socket.removeEventListener('message', this.listener);
-    this.socket.close();
-    this.thing = 'socket closed';
+  componentShouldUpdate() {
+    console.log('update, timerId:', this.timerId);
+    return this.changeCounter > 10;
   }
 
   render() {
@@ -38,9 +43,13 @@ export class AppRoot {
         <header>
           <h1>Stencil Kafka UI</h1>
         </header>
+        <main>
+          <button onClick={() => alert('still responsive')}>click for alert</button>
 
-        <main>backend:{this.backend}</main>
-        <p>thing: {this.thing}</p>
+          {this.thing?.map(item => (
+            <p>{item}</p>
+          ))}
+        </main>
       </div>
     );
   }
