@@ -1,7 +1,6 @@
 # compiled output
-nest*/dist
 **/node_modules
-stencil-ui/dist/
+stencil-ui/**/dist
 !stencil-ui/www/favicon.ico
 stencil-ui/www/
 
@@ -14,10 +13,6 @@ lerna-debug.log*
 
 # OS
 .DS_Store
-
-# Tests
-nest*/coverage
-nest*/.nyc_output
 
 # IDEs and editors
 /.idea

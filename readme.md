@@ -12,7 +12,8 @@
 
 - npm i
 - configure `.env`
-- npm start
+- npm run producer
+- npm run consumer
 
 ## UI `stencil-ui`
 
