@@ -3,6 +3,7 @@
 stencil-ui/**/dist
 !stencil-ui/www/favicon.ico
 stencil-ui/www/
+kafka-node/**/dist
 
 
 # Logs

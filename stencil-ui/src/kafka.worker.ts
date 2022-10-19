@@ -1,3 +1,6 @@
+// import { config } from 'dotenv';
+
+// const { parsed } = config();
 let messages: string[] = [];
 
 const listener = (e: MessageEvent<Buffer>) => {
@@ -12,8 +15,7 @@ const listener = (e: MessageEvent<Buffer>) => {
 };
 
 const connectListeners = (socket: WebSocket) => {
-  // socket.onmessage = listener;
-  socket.addEventListener('message', listener, { once: true });
+  socket.addEventListener('message', listener);
   socket.onopen = ev => console.log('open ', ev);
   socket.onerror = e => {
     console.error(e);
@@ -25,10 +27,15 @@ const connectListeners = (socket: WebSocket) => {
 };
 
 let socket: WebSocket;
-if (socket) socket.close();
-socket = new WebSocket('ws://localhost:8007');
+if (socket) {
+  socket.close();
+  socket = undefined;
+}
+// socket = new WebSocket(parsed['BACKEND']);
 
-export const getMessages = async (offset: number) => {
+export const getMessages = async (socketServer: string, offset: number) => {
+  if (!socket) socket = new WebSocket(socketServer);
+
   connectListeners(socket);
   if (offset > messages.length) {
     return { newOffset: 0, msg: messages };

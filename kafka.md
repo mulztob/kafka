@@ -69,6 +69,7 @@
 - [Designing Events and Event Streams](https://www.youtube.com/watch?v=c1REIERHcuk&list=PLa7VYi0yPIH145SVtPoh3Efv8xZ1ehUYy&index=2)
 - Use Schemas for Event Content (e.g. Apache AVRO, Google Protobuf or JSON Schema)
 - [Common Apache Kafka Mistakes to Avoid](https://www.youtube.com/watch?v=HkUfzavcLj0)
+- Tipping Point where a Browser Websocket inside webworker can no longer keep up with kafka seems to be inbetween 500-5000 simple messages per second
 
 ## Kafka in Browser
 

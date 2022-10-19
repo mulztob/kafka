@@ -1,5 +1,6 @@
-import { Component, h, State } from '@stencil/core';
+import { Component, Env, h, State } from '@stencil/core';
 import { getMessages } from '../../kafka.worker';
+// import {worker} from '../../kafka.worker.ts?worker';
 
 @Component({
   tag: 'app-root',
@@ -11,15 +12,15 @@ export class AppRoot {
   private offset: number = 0;
   private changeCounter: number = 0;
   private readonly interval = 'intervalId';
-  private timerId: number;
-
+  //FIXME: spawns new web workers in dev mode w/o killing old ones... meaning websockets accumulate as well
   componentWillLoad() {
+    console.log('componentWillLoad');
+
     const oldTimerId = window.sessionStorage.getItem(this.interval);
     clearInterval(oldTimerId);
-
     const newTimerId = setInterval(
       async () => {
-        const { newOffset, msg } = await getMessages(this.offset);
+        const { newOffset, msg } = await getMessages(Env['BACKEND'], this.offset);
         this.offset = newOffset;
         this.changeCounter += msg.length;
         this.thing = this.thing.length > 20 ? msg : this.thing.concat(msg);
@@ -27,13 +28,33 @@ export class AppRoot {
       250,
       '',
     );
-    this.timerId = newTimerId;
-    console.log(`will load, old timer: ${oldTimerId}, new timer ${newTimerId}`);
+    // console.log(`will load, old timer: ${oldTimerId}, new timer ${newTimerId}`);
     window.sessionStorage.setItem(this.interval, newTimerId.toString());
   }
 
+  connectedCallback() {
+    console.log('connectedCallback');
+  }
+  componentDidLoad() {
+    console.log('componentDidLoad');
+  }
+  componentDidRender() {
+    console.log('componentDidRender');
+  }
+  componentDidUpdate() {
+    console.log('componentDidUpdate');
+  }
+  disconnectedCallback() {
+    console.log('disconnectedCallback');
+  }
+  componentWillRender() {
+    console.log('componentWillRender');
+  }
+  componentWillUpdate() {
+    console.log('componentWillUpdate');
+  }
   componentShouldUpdate() {
-    console.log('update, timerId:', this.timerId);
+    console.log('componentShouldUpdate');
     return this.changeCounter > 10;
   }
 

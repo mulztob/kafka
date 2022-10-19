@@ -45,9 +45,9 @@ wss.on('connection', (socket) => {
  * @param {import('kafkajs').EachMessagePayload} param0 
  */
 const handler = async ({ topic, message }) => {
-    console.log(`handler
-    topic: ${topic},
-    message: ${message.key} - ${message.value}`);
+    // console.log(`handler
+    // topic: ${topic},
+    // message: ${message.key} - ${message.value}`);
 
     pushToClients(message.value)
 }
