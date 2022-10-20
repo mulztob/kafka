@@ -1,6 +1,5 @@
 import { Component, Env, h, State } from '@stencil/core';
-import { getMessages } from '../../kafka.worker';
-// import {worker} from '../../kafka.worker.ts?worker';
+import { getMessages, getMessagesCallback } from '../../kafka.worker';
 
 @Component({
   tag: 'app-root',
@@ -16,6 +15,16 @@ export class AppRoot {
   componentWillLoad() {
     console.log('componentWillLoad');
 
+    this.getMessageInterval();
+    // getMessagesCallback(Env['BACKEND'], newMsg => this.getMessagesCallback(newMsg));
+  }
+
+  private getMessagesCallback(newMsg: string[]) {
+    this.changeCounter += newMsg.length;
+    this.thing = this.thing.length > 20 ? newMsg : this.thing.concat(newMsg);
+  }
+
+  private getMessageInterval() {
     const oldTimerId = window.sessionStorage.getItem(this.interval);
     clearInterval(oldTimerId);
     const newTimerId = setInterval(
@@ -28,34 +37,15 @@ export class AppRoot {
       250,
       '',
     );
-    // console.log(`will load, old timer: ${oldTimerId}, new timer ${newTimerId}`);
+    console.log(`will load, old timer: ${oldTimerId}, new timer ${newTimerId}`);
     window.sessionStorage.setItem(this.interval, newTimerId.toString());
   }
 
-  connectedCallback() {
-    console.log('connectedCallback');
-  }
-  componentDidLoad() {
-    console.log('componentDidLoad');
-  }
-  componentDidRender() {
-    console.log('componentDidRender');
-  }
-  componentDidUpdate() {
-    console.log('componentDidUpdate');
-  }
-  disconnectedCallback() {
-    console.log('disconnectedCallback');
-  }
-  componentWillRender() {
-    console.log('componentWillRender');
-  }
-  componentWillUpdate() {
-    console.log('componentWillUpdate');
-  }
   componentShouldUpdate() {
-    console.log('componentShouldUpdate');
-    return this.changeCounter > 10;
+    if (this.changeCounter > 10) {
+      this.changeCounter = 0;
+      return true;
+    }
   }
 
   render() {

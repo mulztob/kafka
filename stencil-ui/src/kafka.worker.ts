@@ -1,6 +1,3 @@
-// import { config } from 'dotenv';
-
-// const { parsed } = config();
 let messages: string[] = [];
 
 const listener = (e: MessageEvent<Buffer>) => {
@@ -43,4 +40,24 @@ export const getMessages = async (socketServer: string, offset: number) => {
     const msg = messages.slice(offset);
     return { newOffset: offset + msg.length, msg };
   }
+};
+
+export const getMessagesCallback = async (socketServer: string, cb: (msg: string[]) => void) => {
+  if (!socket) socket = new WebSocket(socketServer);
+  connectListeners(socket);
+  let offset = 0;
+  const pollMs = 200;
+
+  return new Promise((_, __) => {
+    setInterval(() => {
+      if (offset > messages.length) {
+        offset = 0;
+        cb(messages);
+      } else {
+        const msg = messages.slice(offset);
+        offset += msg.length;
+        cb(msg);
+      }
+    }, pollMs);
+  });
 };
