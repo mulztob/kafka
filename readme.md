@@ -16,8 +16,8 @@
 - npm i
 - configure `.env`
   - `KAFKA_PRODUCERTIME` (ms between producing 5 new messages)
-  - `KAFKA_BROKERS` to point to at least one broker of the cluster
-  - `WEBSOCKET_PORT` port for websocket server. take care that
+  - `KAFKA_BROKERS` to point to at least one broker of the cluster (defaults to <local ip>:9093)
+  - `WEBSOCKET_PORT` port for websocket server. take care that WEBSOCKET_PORT and setting stencil-ui/.env/BACKEND are in sync
 - `npm run producer.js`
 - `npm run websocket.consumer.js`
 
