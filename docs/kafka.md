@@ -44,7 +44,7 @@
 | Normalized Data                  | e.g. Data taken directly from one Database. Danger of Tight coupling and expensive joins on streams                                                                                                                                                                         |
 | Denormalized Data                | e.g. Data mixed together and filtered from several Database tables in order to support a common use case                                                                                                                                                                    |
 | Idempotency (Pattern)            | Event can be executed multiple time w/o changing the state (e.g. on error you can just retry it w/o changing your application state). Deault: true for Apache Kafka 3.2.0 and later (before: false)                                                                         |
-| Message outbox (Pattern)         | a                                                                                                                                                                                                                                                                           |
+| Message outbox (Pattern)         | [Pattern definition](https://microservices.io/patterns/data/transactional-outbox.html)                                                                                                                                                                                      |
 | Dead Letter Queue (DLQ, Pattern) | If a message fails multiple times you can move it to a DLQ. Messages in a DLQ usually involve manual error correction and a complete resend.                                                                                                                                |
 
 ## APIs
@@ -79,8 +79,9 @@
   - Adding Brokers hurts
 - [Designing Events and Event Streams](https://www.youtube.com/watch?v=c1REIERHcuk&list=PLa7VYi0yPIH145SVtPoh3Efv8xZ1ehUYy&index=2)
 - Use Schemas for Event Content (e.g. Apache AVRO, Google Protobuf or JSON Schema)
-- [Common Apache Kafka Mistakes to Avoid](https ://www.youtube.com/watch?v=HkUfzavcLj0)
+- [Common Apache Kafka Mistakes to Avoid](https://www.youtube.com/watch?v=HkUfzavcLj0)
 - There are Producer Transactions as well as Consumer and Producer Callback if one needs them
+- [Microservice Design Patterns](https://microservices.io/patterns/index.html)
 
 ## Kafka in Browser
 
