@@ -59,6 +59,7 @@
 
 - [Kafka in Typescript](https://javascript.plainenglish.io/a-beginners-introduction-to-kafka-with-typescript-using-nestjs-7c92fe78f638?gi=dc7e0ef4c528)
 - [Mit Nest.JS](https://docs.nestjs.com/microservices/kafka)
+- [kcat - Debug Tool](https://github.com/edenhill/kcat)
 
 ## Best Practices
 
