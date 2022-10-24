@@ -16,42 +16,46 @@
 
 ## Begriffe
 
-| Term                     | Definition                                                                                                                 |
-| ------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
-| Event                    | Event for a specific Topic, has a key (~id), value, timestamp and might have metadata                                      |
-| Event Key                | an identifier for a nummber of events for a topic. Same key always goes to same partition. Used for Log compaction as well |
-| Event Stream             | b                                                                                                                          |
-| Broker                   | An instance in the Kafka cluster handling some partitions                                                                  |
-| Leader/Follower (Broker) | Leader - A Broker in Kafka that gets produced events first                                                                 |
-| Partition                | A part of an event stream on a specific broker                                                                             |
-| Segment                  | A part of a partition (e.g. which will be deleted if retention period is reached                                           |
-| Topic                    | (Usually) Type of events                                                                                                   |
-| Log compaction/Snapshot  |                                                                                                                            |
-| Producer                 | Pushes Event on at least one topic to kafka                                                                                |
-| Consumer                 | (permanently) polls kafka for at least one topic (Pulls)                                                                   |
+| Term                     | Definition                                                                                                                                                                                                                  |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Event                    | Event for a specific Topic, has a key (~id), value, timestamp and might have metadata                                                                                                                                       |
+| Event Key                | an identifier for a nummber of events for a topic. Same key always goes to same partition. Used for Log compaction as well                                                                                                  |
+| Event Stream             | Events in a topic                                                                                                                                                                                                           |
+| Broker                   | An instance in the Kafka cluster handling some partitions                                                                                                                                                                   |
+| Leader/Follower (Broker) | Leader - A Broker in Kafka that gets produced events first                                                                                                                                                                  |
+| Partition                | A part of an event stream on a specific broker                                                                                                                                                                              |
+| Segment                  | A part of a partition (e.g. which will be deleted if retention period is reached                                                                                                                                            |
+| Topic                    | Pretty much synonymous to Event Stream. The thing you can subscribe to as a consumer                                                                                                                                        |
+| Log compaction/Snapshot  | If a topic's segment reached the end of its retention criteria it gets deleted and reduced to a single event                                                                                                                |
+| Producer                 | Pushes Event on at least one topic to kafka                                                                                                                                                                                 |
+| Consumer                 | (permanently) polls kafka for at least one topic (Pulls)                                                                                                                                                                    |
+| Saga (pattern)           | Design Pattern to organize multiple operations (Consumers/Producers) with an outer boundary. Each Step has an undo ("Compensation") and Saga would abort future step while also undoing all already executed previous steps |
 
 ## Event Types and Streams
 
-| Term                       | Meaning                                                                                                                                                                                                                                                                     |
-| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Fact Event Type (Pattern)  | An Event which can be used to rebuild its corresponding Application state (Full facts)                                                                                                                                                                                      |
-| Delta Event Type (Pattern) | Only Diff to the previous Application State is sent. fast&small but difficult to rebuild state                                                                                                                                                                              |
-| Before-After-Fields        | Log the value beofre and after not just the new value                                                                                                                                                                                                                       |
-| Composite Event            | usually a fact event which contains some additional info (like a reason of change)                                                                                                                                                                                          |
-| Single Event Stream        | A Stream with one type of events. Mostly used                                                                                                                                                                                                                               |
-| Multi Event Stream         | A Stream that contains multiple types of event. <br/>Must be produced by the same producer. Rare. May be used if order of events is very important. Creates tight coupling between Consumers and Producer and means that every consumer need to handle multiple event types |
-| Normalized Data            | e.g. Data taken directly from one Database. Danger of Tight coupling and expensive joins on streams                                                                                                                                                                         |
-| Denormalized Data          | e.g. Data mixed together and filtered from several Database tables in order to support a common use case                                                                                                                                                                    |
+| Term                             | Meaning                                                                                                                                                                                                                                                                     |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Fact Event Type (Pattern)        | An Event which can be used to rebuild its corresponding Application state (Full facts)                                                                                                                                                                                      |
+| Delta Event Type (Pattern)       | Only Diff to the previous Application State is sent. fast&small but difficult to rebuild state                                                                                                                                                                              |
+| Before-After-Fields              | Log the value(s) before and after not just the new value                                                                                                                                                                                                                    |
+| Composite Event                  | usually a fact event which contains some additional info (like a reason of change)                                                                                                                                                                                          |
+| Single Event Stream              | A Stream with one type of events. Mostly used                                                                                                                                                                                                                               |
+| Multi Event Stream               | A Stream that contains multiple types of event. <br/>Must be produced by the same producer. Rare. May be used if order of events is very important. Creates tight coupling between Consumers and Producer and means that every consumer need to handle multiple event types |
+| Normalized Data                  | e.g. Data taken directly from one Database. Danger of Tight coupling and expensive joins on streams                                                                                                                                                                         |
+| Denormalized Data                | e.g. Data mixed together and filtered from several Database tables in order to support a common use case                                                                                                                                                                    |
+| Idempotency (Pattern)            | Event can be executed multiple time w/o changing the state (e.g. on error you can just retry it w/o changing your application state). Deault: true for Apache Kafka 3.2.0 and later (before: false)                                                                         |
+| Message outbox (Pattern)         | a                                                                                                                                                                                                                                                                           |
+| Dead Letter Queue (DLQ, Pattern) | If a message fails multiple times you can move it to a DLQ. Messages in a DLQ usually involve manual error correction and a complete resend.                                                                                                                                |
 
 ## APIs
 
-- Consumer --> Holt sich Nachrichten von Kafka (Pull)
-- Producer --> Erzeugt Nachrichten und schickt an Kafka (Push)
+- Consumer --> Gets messages from Kafka (Pull)
+- Producer --> Create messages for one or more topics and sends to Kafka (Push)
 - Admin
-- Stream --> Mache aus einem Event ein anderes Event
+- Stream --> Take an Event stream and create a different event stream from it
 - Connect --> Anbindung Fremdsysteme, z.B. Datenbanken
 
-## Beispiele
+## Examples
 
 - [Kafka in Typescript](https://javascript.plainenglish.io/a-beginners-introduction-to-kafka-with-typescript-using-nestjs-7c92fe78f638?gi=dc7e0ef4c528)
 - [Mit Nest.JS](https://docs.nestjs.com/microservices/kafka)
@@ -59,18 +63,31 @@
 ## Best Practices
 
 - [How to fail at Kafka](https://www.youtube.com/watch?v=xsdoQkoao2U&list=TLPQMTAxMDIwMjIu-3LT0rTWNA&index=2)
-  - Kafka's Default Konfig ist für Latenz, nicht für Robustheit
+  - Kafka's Default Config is for latency, not for Robustness (~ Replication Factor, # of brokers, # of ACKs)
+    This was changed on newer versions of Kafka ~3.0.0
+  - Missing Exception Handling (Not assuming that something can go wrong, ~retry, ~dead letter queue, ~message outbox pattern, ~saga pattern)
   - Duplicate Message/Idempotency
-  - Exception Handling (Was kann alles schief laufen)
-  - Data governance (~ Data schema versions, Schema Registry~Avro)
-  - Network Bandwidth
-  - No metrics...
+  - No Schema Evolution / Data governance (~ Data schema versions, Confluent Schema Registry, Avro, Google Protocol Buffer etc.)
+  - Inadequate Network Bandwidth
+    - Adding New Brokers is expensive since they need to replicate a lot of data
+  - No Monitoring/metrics...
 - [Lessons Learned from Kafka in Production](https://www.youtube.com/watch?v=1vLMuWsfMcA&list=TLPQMTAxMDIwMjIu-3LT0rTWNA&index=2)
+  - Watch your In Sync Replica List (ISR)
+  - Keep versions consistent
+  - Use automated health check
+  - Adding Brokers hurts
 - [Designing Events and Event Streams](https://www.youtube.com/watch?v=c1REIERHcuk&list=PLa7VYi0yPIH145SVtPoh3Efv8xZ1ehUYy&index=2)
 - Use Schemas for Event Content (e.g. Apache AVRO, Google Protobuf or JSON Schema)
-- [Common Apache Kafka Mistakes to Avoid](https://www.youtube.com/watch?v=HkUfzavcLj0)
-- Tipping Point where a Browser Websocket inside webworker can no longer keep up with kafka seems to be inbetween 500-5000 simple messages per second
+- [Common Apache Kafka Mistakes to Avoid](https ://www.youtube.com/watch?v=HkUfzavcLj0)
+- There are Producer Transactions as well as Consumer and Producer Callback if one needs them
 
 ## Kafka in Browser
 
-- [Confluent Article on Kafka in Browser](https://www.confluent.io/blog/consuming-messages-out-of-apache-kafka-in-a-browser/)
+- [Confluent Article on Kafka in Browser](https://www.confluent.io/blog/consuming-messages-out-of-apache-kafka-in-a-browser/)  
+  implemented with Web Worker / Websocket. see kafka-node/websocket.consumer / stencil-ui/kafka.worker.ts
+
+## Message/Topic Schema changes over time
+
+- [Schema evolution, List of Q&A](https://medium.com/expedia-group-tech/practical-schema-evolution-with-avro-c07af8ba1725)
+- [Good article on how it is handled in different technologies](https://martin.kleppmann.com/2012/12/05/schema-evolution-in-avro-protocol-buffers-thrift.html)
+- https://developers.google.com/protocol-buffers/docs/overview#updating-defs
