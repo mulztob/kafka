@@ -12,6 +12,7 @@
 
 - Weil es die BA vorschreibt
 - Weil es die Services untereinander entkoppelt
+- ...
 
 # Kafka Cluster aufsetzen (Kurzform)
 
